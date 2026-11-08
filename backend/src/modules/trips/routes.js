@@ -2,10 +2,14 @@ import { Router } from 'express';
 import { asyncHandler } from '../../shared/httpError.js';
 import { requireAuth } from '../../middleware/auth.js';
 import * as service from './service.js';
+import { tripReservationFacade as facade } from '../../facade/index.js';
 
 export const router = Router();
 router.use(requireAuth);
 
+router.get('/', asyncHandler(async (req, res) => res.json(await facade.searchTrips(req.token, req.query))));
+router.post('/', asyncHandler(async (req, res) =>
+  res.status(201).json(await facade.createTrip(req.token, req.user.id, req.body || {}))));
 router.get('/', asyncHandler(async (req, res) => res.json(await service.search(req.token, req.query))));
 router.post('/', asyncHandler(async (req, res) =>
   res.status(201).json(await service.createTrip(req.token, req.user.id, req.body || {}))));

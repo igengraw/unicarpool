@@ -20,5 +20,7 @@ Keep reservation coordination inside the `public.reserve_seat(p_trip_id uuid)` P
 ## Verification and known limitation
 The repository contains the SQL function and Node.js RPC call. Unit tests with mocked Supabase responses validate API behavior, but do **not** prove concurrency safety. The `unique (trip_id, passenger_id)` constraint also means that a cancelled passenger cannot create a fresh reservation for the same trip without an explicit rebooking policy/change. Document this as a future business-rule decision.
 
+## Relationship to other decisions
+The reservation call reaches this function through `TripReservationFacade` (see ADR-003). The facade only delegates; the transactional logic stays in `reserve_seat`.
 ## Relationship to design patterns
 This ADR is an implementation and consistency decision, not a claim that `reserve_seat` is one of the course's GoF patterns. The separate Milestone 3 design-pattern criterion must be evidenced by an actual implementation of a pattern covered in the course (Factory Method, Abstract Factory, Builder, Adapter, Facade, Proxy, or Decorator).
