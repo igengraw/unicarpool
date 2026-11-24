@@ -3,12 +3,18 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { env } from './config/env.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
+import { eventBus } from './shared/events/eventBus.js';
+import { createAuditConsumer } from './modules/audit/consumer.js';
+import { writeAuditRecord } from './modules/audit/repository.js';
 // Each module exposes only its router (its public interface).
 import { router as identity } from './modules/identity/index.js';
 import { router as trips } from './modules/trips/index.js';
 import { router as reservations } from './modules/reservations/index.js';
 import { router as notifications } from './modules/notifications/index.js';
 import { router as moderation } from './modules/moderation/index.js';
+
+const auditConsumer = createAuditConsumer(writeAuditRecord);
+eventBus.subscribe('ReservationCreated', auditConsumer);
 
 export const app = express();
 app.use(helmet());
