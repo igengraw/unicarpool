@@ -9,6 +9,11 @@ import { router as trips } from './modules/trips/index.js';
 import { router as reservations } from './modules/reservations/index.js';
 import { router as notifications } from './modules/notifications/index.js';
 import { router as moderation } from './modules/moderation/index.js';
+import { eventBus } from './shared/eventBus.js';
+import { registerDriverCancellationConsumer, DriverCancellationStats } from './modules/trips/driverCancellationStats.js';
+
+export const driverCancellationStats = new DriverCancellationStats();
+registerDriverCancellationConsumer(eventBus, driverCancellationStats);
 
 export const app = express();
 app.use(helmet());
