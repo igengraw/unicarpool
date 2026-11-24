@@ -1,5 +1,7 @@
 import { HttpError } from '../../shared/httpError.js';
 import * as repo from './repository.js';
+import { eventBus } from '../../shared/eventBus.js';
+import { tripCancelled } from './events.js';
 
 const isDate = (v) => typeof v === 'string' && !Number.isNaN(Date.parse(v));
 const text = (v) => typeof v === 'string' && v.trim().length > 0;
@@ -36,4 +38,9 @@ export function updateTrip(token, id, b) {
 }
 
 // FR5: driver cancels a trip
-export const cancelTrip = (token, id) => repo.update(token, id, { status: 'cancelled' });
+// The event is published only after the update succeeded.
+export async function cancelTrip(token, id, { update = repo.update, bus = eventBus } = {}) {
+  const trip = await update(token, id, { status: 'cancelled' });
+  await bus.publish(tripCancelled(trip));
+  return trip;
+}
